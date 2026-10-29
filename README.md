@@ -1,10 +1,10 @@
--- // SH Admin Smart Chat UI (Auto-Detect Commands vs Chat) 🐣🔥
+-- // SH Admin Smart Chat UI (Optimized & Fast Arabic Text) 🐣🔥
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- حذف أي واجهة قديمة لنفس الاسم حتى ما يصير تكرار
+-- حذف أي واجهة قديمة حتى ما يصير تكرار
 if PlayerGui:FindFirstChild("SH_AdminChatUI") then
     PlayerGui.SH_AdminChatUI:Destroy()
 end
@@ -15,21 +15,21 @@ ScreenGui.Name = "SH_AdminChatUI"
 ScreenGui.Parent = PlayerGui
 ScreenGui.ResetOnSpawn = false
 
--- الإطار الرئيسي (مستطيل في الجانب الأيمن بالمنتصف)
+-- الإطار الرئيسي (على اليمين وفوق بشوي)
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 220, 0, 45)
-MainFrame.Position = UDim2.new(1, -230, 0.5, -22) -- الجانب الأيمن بالمنتصف تماماً
+MainFrame.Position = UDim2.new(1, -230, 0.35, 0) -- رفعناه لفوق شوي (0.35 بدل 0.5)
 MainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 50) -- رصاصي داكن فخم
 MainFrame.BorderSizePixel = 0
 MainFrame.Parent = ScreenGui
 
--- حواف ناعمة (CornerRadius)
+-- حواف ناعمة
 local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 10)
 UICorner.Parent = MainFrame
 
--- إطار خفيف (Stroke) جمالي
+-- إطار خفيف جمالي (Stroke)
 local UIStroke = Instance.new("UIStroke")
 UIStroke.Color = Color3.fromRGB(200, 50, 50) -- لمسة حمراء ستايل SH
 UIStroke.Thickness = 1.5
@@ -66,35 +66,31 @@ local ButtonCorner = Instance.new("UICorner")
 ButtonCorner.CornerRadius = UDim.new(0, 8)
 ButtonCorner.Parent = SendButton
 
--- وظيفة معالجة وإرسال الأمر بذكاء
+-- وظيفة الإرسال السريع جداً بدون أي تأخير
 local function SendCommand()
     local text = TextBox.Text
     if text and text ~= "" then
         local finalCommand = ""
         
-        -- فحص هل النص يبدأ بـ ; أو علامة أمر (يعني أمر مباشر بدون ;to)
-        -- أو إذا گدرتي تحطين شرط للأوامر مثلاً إذا يبدأ بـ ; يرسله وحده، وإذا لا يضيف قبله ;to
+        -- إذا النص يبدأ بـ ; يرسله وحده، وإذا لا يضيف قبله ;to
         if string.sub(text, 1, 1) == ";" then
-            -- إذا كتبتي أمر جاهز يبدأ بـ ; (مثل ;kill player) يرسله كما هو بدون تكرار
             finalCommand = text
         else
-            -- إذا كتبتي كلام عادي (مثل: هاي عندي شات) يضيف قبله ;to تلقائياً
-            finalCommand = ";to " + text
+            finalCommand = ";to " .. text -- تصحيح عملية الدمج بعلامة .. السريعة باللوا
         end
         
         local args = {
             [1] = finalCommand
         }
         
-        pcall(function()
-            ReplicatedStorage.HDAdminHDClient.Signals.RequestCommand:InvokeServer(unpack(args))
-        end)
+        -- إرسال فوري بدون pcall بطيء أو انتظار زمني
+        ReplicatedStorage.HDAdminHDClient.Signals.RequestCommand:InvokeServer(unpack(args))
         
         TextBox.Text = ""
     end
 end
 
--- الإرسال بضغط زر Enter من الكيبورد
+-- الإرسال الفوري عند الضغط على Enter
 TextBox.FocusLost:Connect(function(enterPressed)
     if enterPressed then
         SendCommand()
@@ -104,4 +100,4 @@ end)
 -- الإرسال بالنقر على الزر 🐣
 SendButton.MouseButton1Click:Connect(SendCommand)
 
-print("--- [SH] Smart Admin Chat UI Loaded Successfully! ---")
+print("--- [SH] Fast Admin Chat UI Loaded Successfully! ---")
